@@ -16,11 +16,8 @@ class Account(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 class Movie(models.Model):
-    title = models.CharField()
+    title = models.CharField(max_length=100)
     description = models.TextField()
     actors = models.TextField()
     director = models.CharField(max_length=100)
-    rating = models.PositiveIntegerField(default=0)    
-
-class MovieSession(models.Model):
-    pass
+    rating = models.PositiveIntegerField(default=0)     
