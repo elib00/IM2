@@ -1,43 +1,61 @@
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, APIView
 from .models import User
 from .serializers import UserSerializer
+from django.shortcuts import get_object_or_404
 
-@api_view(http_method_names=["GET", "POST"])
-def homepage(request: Request):
-    res = {"message": "Hi"}
-    return Response(data=res, status=status.HTTP_200_OK)
-
-@api_view(http_method_names=["GET"])
-def get_users(request: Request):
+@api_view(["GET"])
+def get_all_users(request: Request):
     users = User.objects.all()
-    serializer = UserSerializer(instance=users, many=True) #many = true is for serializing a query set
-    
-    res = {
-        "success": True, 
-        "message": "Users list successfully retrieved",
-        "data": serializer.data
-    }
-    
-    return Response(data=res, status=status.HTTP_200_OK)
+    serializer = UserSerializer(instance=users, many=True)
+    return Response(data=serializer.data, status=status.HTTP_200_OK)  
 
-@api_view(http_method_names=["POST"])
-def create_user(request: Request):
-    data = request.data
-    serializer = UserSerializer(data=data)
-    
-    if serializer.is_valid():
-        serializer.save()
+class UserOperationsView(APIView):
+    serializer_class = UserSerializer
         
-        res = {
-            "success": True,
-            "message": "User created successfully",
-            "data": serializer.data
-        }
+    #for creating a new user
+    def post(self, request: Request, *args, **kwargs):
+        data = request.data
+        serializer = self.serializer_class(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            
+            res = {
+                "success": True,
+                "message": "User created successfully",
+                "data": serializer.data
+            }
+            
+            return Response(data=res, status=status.HTTP_201_CREATED)
+
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request: Request, user_id: int, *args, **kwargs):
+        user = get_object_or_404(User, pk=user_id) #get the user or raise if not found
+        serializer = self.serializer_class(instance=user)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request: Request, user_id: int, *args, **kwargs):
+        user = get_object_or_404(User, pk=user_id)
+        new_user_data = request.data
+        serializer = self.serializer_class(instance=user, data=new_user_data)
         
-        return Response(data=res, status=status.HTTP_201_CREATED)
+        if serializer.is_valid():
+            serializer.save()
+            res = {
+                "success": True, 
+                "message": f"User with id {user_id} updated successfully",
+                "data": serializer.data
+            }
+            
+            return Response(data=res, status=status.HTTP_200_OK)
+
+        return Response(data=serializer.errors, status=HTTP_400_BAD_REQUEST)
     
-    return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+    def delete(self, request: Request, user_id: int, *args, **kwargs):
+        user = get_object_or_404(User, pk=user_id)
+        user.delete()
+        return Response(status=HTTP_204_NO_CONTENT)
+        
