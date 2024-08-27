@@ -8,24 +8,15 @@ class Movie(models.Model):
     cast = models.TextField()
     duration = models.DurationField()
     movie_format = models.CharField(
-        max_length=3, 
+        max_length=2, 
         choices=[
             ("2D", "2D"),
             ("3D", "3D")
         ], 
         default="2D"
     )
-    cinema_type = models.CharField(
-        max_length=20,
-        choices=[
-            ("IMAX", "IMAX"),
-            (" Director's Club", "Director's Club"),
-            ("Regular", "Regular")
-        ],
-        default="Regular"
-    )
     date_and_time = models.DateTimeField()
-    film_rating = models.CharField(
+    movie_rating = models.CharField(
         max_length=10,
         choices=[
             ("G", "General Audience"),
