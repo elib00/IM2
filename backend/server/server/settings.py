@@ -28,6 +28,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
 
 # Application definition
 
@@ -42,7 +44,8 @@ INSTALLED_APPS = [
     'movies',
     'cinema',
     'rest_framework',
-    'rest_framework.authtoken'
+    'rest_framework.authtoken',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
@@ -53,6 +56,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    # 'django.middleware.common.CommonMiddleware'
 ]
 
 AUTH_USER_MODEL = "accounts.User"
