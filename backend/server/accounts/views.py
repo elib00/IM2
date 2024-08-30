@@ -4,15 +4,21 @@ from rest_framework.request import Request
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authtoken.models import Token
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, login
 from .serializers import UserSerializer, LoginSerializer
+from .permissions import IsOwner
 
 User = get_user_model()
 
 class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsOwner]
+    
+    def get_object(self):
+        obj = super().get_object()
+        return obj
+    
     
     def create(self, request: Request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
@@ -52,6 +58,8 @@ class LoginView(APIView):
                 }
             }
             
+            # login(request, user)
+        
             return Response(data=response, status=status.HTTP_200_OK)
 
         response = {
