@@ -11,13 +11,10 @@ class ScheduledMovie(models.Model):
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name="scheduled_movies")
     audience_number = models.PositiveIntegerField(default=0)
     schedule = models.DateTimeField()
+    is_active = models.BooleanField(default=True)
     
 class Ticket(models.Model):
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="profile_tickets")
     scheduled_movie = models.ForeignKey(ScheduledMovie, on_delete=models.CASCADE, related_name="movie_tickets")
+    seat_identifier = models.CharField(max_length=3, default="")
     is_active = models.BooleanField(default=True)
-    
-
-    
-    
-    

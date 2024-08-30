@@ -9,4 +9,4 @@ class IsOwner(BasePermission):
             return obj == request.user
         
         # For other models with a user field
-        return getattr(obj, 'user', None) == request.user
+        return getattr(obj, "user", None) == request.user

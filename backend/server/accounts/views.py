@@ -13,12 +13,19 @@ User = get_user_model()
 class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated, IsOwner]
+    
+    def get_permissions(self):
+        if self.action == "create":
+            # Allow any user to create a profile
+            return [AllowAny()]
+        else:
+            # Require authentication for other actions
+            return [IsAuthenticated(), IsOwner()]
+
     
     def get_object(self):
         obj = super().get_object()
         return obj
-    
     
     def create(self, request: Request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
@@ -26,7 +33,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
             serializer.save()
             response = {
                 "success": True,
-                "message":  "User and Profile created successfully",
+                "message": "User and Profile created successfully",
                 "data": serializer.data
             }
             

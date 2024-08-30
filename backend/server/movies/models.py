@@ -15,7 +15,6 @@ class Movie(models.Model):
         ], 
         default="2D"
     )
-    date_and_time = models.DateTimeField()
     movie_rating = models.CharField(
         max_length=10,
         choices=[
